@@ -85,7 +85,8 @@ module.exports = {
 				createdAt: new Date().toISOString()
 			});
 
-			const res = await newUser.save();   // saving the new data to the db
+      // saving the new data to the db
+			const res = await newUser.save();   // TODO: what does it returns ??   
 
 			const token = generateToken(res);
 			
