@@ -1,5 +1,5 @@
 const Post = require('../../models/Post');
-const checkAuth = require('../../utils/check-auth');
+const checkAuth = require('../../util/check-auth');
 const { AuthenticationError } = require('apollo-server');
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
     async createPost(_, { body }, context){
       const user = checkAuth(context);    // it already confirms if the user accessing the id is the admin or not
 
-      if(args.body.trim() === ''){
+      if(body.trim() === ''){
         throw new Error('Post body must not be empty');
       }
 

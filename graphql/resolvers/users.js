@@ -1,11 +1,13 @@
-const { SECRET_KEY } = require('../../config');
-const User = require('../../models/User');
-
-// lib's for hashing & crypting passwords
-const { validateRegisterInput, validateLoginInput } = require('../../utils/validators');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserInputError } = require('apollo-server');
+
+const { SECRET_KEY } = require('../../config');
+const User = require('../../models/User');
+const { 
+  validateRegisterInput, 
+  validateLoginInput 
+} = require('../../util/validators');
 
 // helper funct's
 function generateToken(user){
@@ -69,7 +71,7 @@ module.exports = {
 			const user = await User.findOne({ username });
 			if(user){
 				throw new UserInputError('User is taken', {
-					error: {
+					errors: {
 						username: 'This user is taken'
 					}
 				});

@@ -5,13 +5,9 @@ import { Link } from 'react-router-dom';
 
 function PostCard({post :{ body, createdAt, id, username, likeCount, commentCount, likes, comments }}) {
 
-  const likePost = ()=>{
-    console.log('like post !!');
-  }
+  const likePost = () => {};
 
-  const commentOnPost = ()=>{
-    console.log('commentd !!');
-  }
+  const commentOnPost = () => {};
 
   return (
     <div>
@@ -28,6 +24,7 @@ function PostCard({post :{ body, createdAt, id, username, likeCount, commentCoun
             <strong>{body}</strong>
           </Card.Description>
         </Card.Content>
+
         <Card.Content extra>
           {/* like button  */}
           <Button as='div' labelPosition='right' onClick={likePost}>
@@ -41,7 +38,7 @@ function PostCard({post :{ body, createdAt, id, username, likeCount, commentCoun
 
           {/* Comment button */}
           <Button as='div' labelPosition='right' onClick={commentOnPost}>
-            <Button color='blue' basic>
+            <Button color='blue' basic> 
               <Icon name='comments'/>
             </Button>
             <Label basic color='blue' pointing='left'>
