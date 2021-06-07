@@ -15,6 +15,7 @@ function MenuBar() {
 
   const menu = user ? 
   (
+    // show these link's when logged in
     <Menu pointing secondary size="massive" color="teal">
       <Menu.Item
         name={user.username}
@@ -31,6 +32,7 @@ function MenuBar() {
     </Menu>
   ) : 
   (
+    // show these when logged out
     <Menu pointing secondary size="massive" color="teal">
       <Menu.Item
         name='home'

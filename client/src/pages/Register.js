@@ -47,7 +47,6 @@ function Register(props){
           name="username"
           value={values.username}
           error={errors.username ? true : false}
-          // error={errors === undefined ? false : ( errors.username ? true : false )}
           onChange={onChange}
         />
 
@@ -58,7 +57,6 @@ function Register(props){
           name="email"
           value={values.email}
           error={errors.email ? true : false}
-          // error={errors === undefined ? false : ( errors.email ? true : false )}
           onChange={onChange}
         />
 
@@ -69,7 +67,6 @@ function Register(props){
           name="password"
           value={values.password}
           error={errors.password ? true : false}
-          // error={errors === undefined ? false : ( errors.password ? true : false )}
           onChange={onChange}
         />
 
@@ -80,7 +77,6 @@ function Register(props){
           name="confirmPassword"
           value={values.confirmPassword}
           error={errors.confirmPassword ? true : false}
-          // error={errors === undefined ? false : ( errors.confirmPassword ? true : false )}
           onChange={onChange}
         />
 

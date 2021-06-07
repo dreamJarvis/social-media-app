@@ -6,6 +6,7 @@ import { createHttpLink } from 'apollo-link-http';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { setContext } from 'apollo-link-context';
 
+// linking with the graph-ql server
 const httpLink = createHttpLink({
   uri: 'http://localhost:5000/',
 });
@@ -15,7 +16,7 @@ const httpLink = createHttpLink({
 const authLink = setContext(() => {
   const token = localStorage.getItem('jwtToken');
 
-  // here we just add an authorization to the request header to the request
+  // add authorization to the request header to the request
   return {
     headers: {
       Authorization: token ? `Bearer ${token}` : ''

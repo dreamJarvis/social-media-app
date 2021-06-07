@@ -6,21 +6,22 @@ const initialState = {
   user: null,
 }
 
+// ** keeping the data persistent
 // if the token is valid keep the user logged in,
 // else log user out
 if(localStorage.getItem('jwtToken')){
   const decodedToken = jwtDecode(localStorage.getItem('jwtToken'));
 
-  console.log('decoded token : ',decodedToken);
-
+  // if the token is within time-limits then keep logged in
   if(decodedToken.exp * 1000 < Date.now()){
     localStorage.removeItem('jwtToken');
-  }else {
+  }else {                                       // else log out
     initialState.user = decodedToken;
   }
 }
 
 // Reducer defination
+// this is the context that will be accessable to all the component's inside it
 const AuthContext = createContext({
   user: null,
   login: (userData) => {},

@@ -41,7 +41,6 @@ function Login(props){
           name="username"
           value={values.username}
           error={errors.username ? true : false}
-          // error={errors === undefined ? false : ( errors.username ? true : false )}
           onChange={onChange}
         />
 
@@ -52,7 +51,6 @@ function Login(props){
           name="password"
           value={values.password}
           error={errors.password ? true : false}
-          // error={errors === undefined ? false : ( errors.password ? true : false )}
           onChange={onChange}
         />
 
@@ -61,6 +59,9 @@ function Login(props){
         </Button>
       </Form>
 
+      {/*
+        detecting error according to the input
+       */}
       { Object.keys(errors).length > 0 && (
         <div className="ui error message">
         <ul className="list">
@@ -74,7 +75,7 @@ function Login(props){
   );
 }
 
-// graphQl query for registering the user to db
+// graphQl query for logging the user to db
 const LOGIN_USER = gql`
   mutation login(
     $username: String!
