@@ -12,16 +12,16 @@ function Login(props){
 
   const { onChange, onSubmit, values } = useForm(loginUserCallback, {
     username: '',
-    password: ''
+    password: '' 
   });
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, { 
     update(_, {data : {login: userData}}){
-      context.login(userData);    //** setting up the login context
+      context.login(userData);    //** setting up the login context 
       props.history.push('/');
     },
     onError(err){
-      setErrors(err.graphQLErrors[0].extensions.exception.errors);
+      setErrors(err.graphQLErrors[0].extensions.exception.errors); 
     },
     variables: values
   });

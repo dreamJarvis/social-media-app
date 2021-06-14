@@ -11,9 +11,10 @@ export default function PostForm() {
     body: ''
   });
 
+  // useMutation -> gives you 3 callbacks: update, onError & variables
   const [createPost, {error}] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
-
+    
     update(proxy, result) {
       // fetching all the data from the apollo-cache 
       // here we are getting the root query

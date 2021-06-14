@@ -40,7 +40,7 @@ function PostCard({
               <Icon name='comments'/>
             </Button>
             <Label basic color='blue' pointing='left'>
-              {commentCount}
+              {commentCount}    
             </Label>
           </Button>
 

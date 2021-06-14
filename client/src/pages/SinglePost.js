@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import gql from 'graphql-tag'
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Button, Card, Grid, Icon, Image, Label } from 'semantic-ui-react';
 import moment from 'moment';
-
+ 
 import { AuthContext } from '../context/auth';
 import LikeButton from '../components/LikeButton';
 import DeleteButton from '../components/DeleteButton';
@@ -12,12 +12,16 @@ export default function SinglePost(props) {
   const { user } = useContext(AuthContext);
   const postId = props.match.params.postId;
 
-  const { data: { getPost }={}} = useQuery(FETCH_POSTS_QUERY, {
+  const { data: { getPost }={}} = useQuery(FETCH_POST_QUERY, {
     variables: {
       postId: postId          //TODO why do we need variables ??
     }
   });
 
+  // post a comment
+  const [submitComment] = useMutation(SUBMIT_COMMENT_MUTATION)
+
+  // go to the home page after deleting the post
   function deletePostCallback(){
     props.history.push('/');
   }
@@ -43,7 +47,7 @@ export default function SinglePost(props) {
             <Card fluid>
               <Card.Content>
                 <Card.Header>{username}</Card.Header>
-                <Card.Meta>{moment(createdAt).fromNow()}</Card.Meta>
+                <Card.Meta>{ moment(createdAt).fromNow() }</Card.Meta>
                 <Card.Description>{body}</Card.Description>
               </Card.Content>
 
@@ -74,25 +78,55 @@ export default function SinglePost(props) {
                 {
                   user && user.username === username && <DeleteButton postId={id} callback={deletePostCallback}/>
                 }
-                
               </Card.Content>
             </Card>
+
+            {/* displaying comments */}
+            {
+              comments.map((comment) =>(
+                <Card fluid key={comment.id}>
+                  <Card.Content>
+                    { 
+                      // to delete a comment
+                      user && user.username === comment.username && 
+                      (
+                        <DeleteButton postId={id} commentId={comment.id}/>
+                      )
+                    }
+                    <Card.Header>{comment.username}</Card.Header>
+                    <Card.Meta>{moment(comment.createdAt).fromNow()}</Card.Meta>
+                    <Card.Description>{comment.body}</Card.Description>
+                  </Card.Content>
+                </Card>
+              ))
+            }
           </Grid.Column>
         </Grid.Row>
       </Grid>
     );
-
-    return postMarkup;
   }
 
-  return (
-    <div>
-      
-    </div>
-  )
+  return postMarkup;
 }
 
-const FETCH_POSTS_QUERY = gql`
+// gql query to post a comment
+const SUBMIT_COMMENT_MUTATION = gql`
+  mutation($postId: !ID, $body: !String){
+    createComment(postId: $postId, body: $body){
+      id
+      comments{
+        id
+        body
+        createdAt
+        username
+      }
+      commentCount
+    }
+  }
+`;
+
+// gql query to fetch a specific post
+const FETCH_POST_QUERY = gql`
   query($postId: ID!){
     getPost(postId: $postId){
       id

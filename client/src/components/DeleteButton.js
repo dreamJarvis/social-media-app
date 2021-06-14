@@ -6,30 +6,37 @@ import { Button, Icon, Confirm } from 'semantic-ui-react';
 
 import { FETCH_POSTS_QUERY } from '../util/graphql';
 
-export default function DeleteButton({postId, callback}) {
+export default function DeleteButton({postId, commentId, callback}) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [deletePost] = useMutation(DELETE_POST_MUTATION,{
+  const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
+
+  const [deletePostOrMutation] = useMutation(mutation,{
     update(proxy){
-      setConfirmOpen(false);
+      setConfirmOpen(false);    // close the confirm modal when the post has been deleted
 
-      // remove post from cache
-      const data = proxy.readQuery({
-        FETCH_POSTS_QUERY
-      });
+      // if removing a post
+      if(!commentId){
+        // fetch post from cache
+        const data = proxy.readQuery({
+          query: FETCH_POSTS_QUERY
+        });
 
-      proxy.writeQuery({
-        query: FETCH_POSTS_QUERY,
-        data: {
-          getPosts: data.getPosts.filter(p => p.id !== postId)
-        }
-      })
+        // update the cache in the server
+        proxy.writeQuery({
+          query: FETCH_POSTS_QUERY,
+          data: {
+            getPosts: data.getPosts.filter(p => p.id !== postId)
+          }
+        })  
+      }
 
-      // route back to home
+      // route back to home, if the postCard is deleted
       if(callback) callback();
     },
     variables: {
-      postId
+      postId,
+      commentId
     }
   });
 
@@ -48,15 +55,32 @@ export default function DeleteButton({postId, callback}) {
       <Confirm
         open={confirmOpen}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={deletePost}
+        onConfirm={deletePostOrMutation}
       />
     </>
   )
 }
 
 
+// gql qurey to delete a post
 const DELETE_POST_MUTATION = gql`
   mutation deletePost($postId: ID!){
     deletePost(postId:$postId)
+  }
+`;
+
+// gql query to delete a comment
+const DELETE_COMMENT_MUTATION = gql`
+  mutation deleteComment($postId: ID! $commentId: ID!){
+    deleteComment(postId: $postId commentId: $commentId){
+      id
+      comments{
+        id 
+        username 
+        createdAt 
+        body
+      }
+      commentCount
+    }
   }
 `;
