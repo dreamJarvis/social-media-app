@@ -1,16 +1,20 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useRef } from 'react'
 import gql from 'graphql-tag'
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Button, Card, Grid, Icon, Image, Label } from 'semantic-ui-react';
+import {Form, Button, Card, Grid, Icon, Image, Label } from 'semantic-ui-react';
 import moment from 'moment';
  
 import { AuthContext } from '../context/auth';
 import LikeButton from '../components/LikeButton';
 import DeleteButton from '../components/DeleteButton';
+import MyPopup from '../util/MyPopup';
 
 export default function SinglePost(props) {
   const { user } = useContext(AuthContext);
   const postId = props.match.params.postId;
+  const commentInputRef = useRef(null);
+
+  const [comment, setComment] = useState('');
 
   const { data: { getPost }={}} = useQuery(FETCH_POST_QUERY, {
     variables: {
@@ -19,7 +23,16 @@ export default function SinglePost(props) {
   });
 
   // post a comment
-  const [submitComment] = useMutation(SUBMIT_COMMENT_MUTATION)
+  const [submitComment] = useMutation(SUBMIT_COMMENT_MUTATION, {
+    update(){
+      setComment('');
+      commentInputRef.current.blur();   // shift's focus from the input bar once comment is posted
+    },
+    variables: {
+      postId,
+      body: comment
+    }
+  })
 
   // go to the home page after deleting the post
   function deletePostCallback(){
@@ -59,20 +72,24 @@ export default function SinglePost(props) {
                 <LikeButton user={user} post={{id, likeCount, likes}}/>
                 
                 {/* comment button */}
-                <Button
-                  as='div'
-                  labelPosition='right'
-                  onClick={
-                    () => console.log('Comment on Post!')
-                  }
+                <MyPopup
+                  content="Comment on post"
                 >
-                  <Button basic color='blue'>
-                    <Icon name='comments'/>
+                  <Button
+                    as='div'
+                    labelPosition='right'
+                    onClick={
+                      () => commentInputRef.current.focus()
+                    }
+                  >
+                    <Button basic color='blue'>
+                      <Icon name='comments'/>
+                    </Button>
+                    <Label basic color='blue' pointing='left'>
+                      {commentCount}
+                    </Label>
                   </Button>
-                  <Label basic color='blue' pointing='left'>
-                    {commentCount}
-                  </Label>
-                </Button>
+                </MyPopup>
 
                 {/* delete post button */}
                 {
@@ -80,6 +97,36 @@ export default function SinglePost(props) {
                 }
               </Card.Content>
             </Card>
+            
+            {/* posting a comment */}
+            {
+              user && 
+              <Card fluid>
+                <Card.Content>
+                  <p>Post a comment</p>
+                  <Form>
+                    <div className="ui action input fluid">
+                      <input
+                        type="text"
+                        placeholder="Comment.."
+                        name="comment"
+                        value={comment}
+                        onChange={event => setComment(event.target.value)}
+                        ref={commentInputRef}
+                      />
+                      <button 
+                        type="submit"
+                        className="ui button teal"
+                        disabled={comment.trim() === ''}
+                        onClick={submitComment}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </Form>
+                </Card.Content>
+              </Card>
+            }
 
             {/* displaying comments */}
             {
@@ -87,7 +134,7 @@ export default function SinglePost(props) {
                 <Card fluid key={comment.id}>
                   <Card.Content>
                     { 
-                      // to delete a comment
+                      //button to delete a comment
                       user && user.username === comment.username && 
                       (
                         <DeleteButton postId={id} commentId={comment.id}/>
@@ -111,7 +158,7 @@ export default function SinglePost(props) {
 
 // gql query to post a comment
 const SUBMIT_COMMENT_MUTATION = gql`
-  mutation($postId: !ID, $body: !String){
+  mutation($postId: ID!, $body: String!){
     createComment(postId: $postId, body: $body){
       id
       comments{

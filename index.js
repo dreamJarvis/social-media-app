@@ -7,7 +7,7 @@ const { MONGODB } = require('./config.js');
 
 const pubsub = new PubSub();
 
-const PORT = process.env.port || 5000;
+const PORT = process.env.port || 5000;    // if the enviroment port is not available, then deploy it on port 5000
 
 const server = new ApolloServer({
   typeDefs,
@@ -28,5 +28,5 @@ mongoose
     console.log(`Server running at ${res.url}`);
   })
   .catch(err => {
-    console.error(err)
+    console.error(err) 
   })
